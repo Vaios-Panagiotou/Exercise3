@@ -8,3 +8,34 @@ make sort;
 ./build/sort_main
 
 
+chunk.c and chunk.h:
+STRUCTS
+1.CHUNK to afisa opos itan.Apla toy ebgala to file descriptor giati theoro oti den xriazete na apothikeute se kathe chunk
+2.CHUNK_Iterator εδω αποθικευω το file descriptor και εναν ακαιρεο που μου λεει σε πιο chunk βρισκομε
+
+Γενικα εχω φτιαξει μια global μεταβλιτη απο CHUNKS(πανακας απο CHUNKS) στο chunk.c οπος και μια μεταβλιτη για το μεγεθος του πινακα
+αν και ειναι καπια πρακτικη να εχουμε global μεταβλητες το εκανα ετσει οστε να μην μπορεις καπιος να εχει προσβασει και να μπορει να αλαζει τα δεδωμενα που εχω μεσα στα chunks
+
+
+FUNCTIONS
+1.Δικες μου
+α.void SetCHUNK(int from_BlockId,int to_BlockId,int recordsInChunk,int blocksInChunk,CHUNK *chunkModifed)
+    Το μονο που κανει ειναι να αποθικευει στο CHUNK που του στελνο τις μεταβλιτες του
+
+β.
+
+
+
+2.Προηπαρχουσες
+α.CHUNK_Iterator CHUNK_CreateIterator(int fileDesc, int blocksInChunk);
+    Αρχικα βρισκο ακριβος ποσα CHUNKS θα χριαστο.Αρχικοποιο τις μεταβλιτες του CHUNK ITERATOR και μετα αποδεσμευω τιχον χορο που ειχα δεσμευση πιο παλια για τα CHUNKS και μετα δεσμευω οσο χριαζομαι.
+    Αρχικοποιο καθε ενα CHUNK ξεχοριστα.Για το τελευτεο ειμαι λιγο πιο προσεκτικος
+
+β.int CHUNK_GetNext(CHUNK_Iterator *iterator,CHUNK* chunk);
+    Ελενχο για αρχι αν βρισκομαι ειδι στο τελευτεο CHUNK του γραφο ενα μινιμα λαθους και επιστρεφο 1(αποτιχια) και εχει απλα το τελευταιο CHUNK ξανα στα χερια του.Αλιος αντιγραφο τα δεδωμενα και τα επιστρεφο
+    στο τελος αλαζο την μεταβλιτη για τον επομενο CHUNK (ουσιαστικα στην προτη κλιση αυτη η συναρτιση επιστρεφη τα δεδωμενα του CHUNK[0]) και 0(επιτιχια).
+
+γ.CHUNK_RecordIterator CHUNK_CreateRecordIterator(CHUNK *chunk);
+    Φτιαχνο ενα iterator και το αρχικοποιο με τα δεδομενα που μου στελνει για το σιγκεκριμενο CHUNK
+
+δ.

@@ -14,18 +14,16 @@ typedef struct {
     int blocksInChunk;
 } CHUNK;
 
-/* Represents an iterator for traversing chunks within a file using a array of chunks, storing only the file descriptor and the chunk that we are . Useful for efficiently iterating over file chunks.*/
+/* Represents an iterator for traversing chunks within a file using a array of chunks(global virable), storing only the file descriptor and the chunk that we are(chunk_index). Useful for efficiently iterating over file chunks.*/
 typedef struct {
     int file_desc;
     int chunk_index;
-    int chunkSize;
-    CHUNK *chunk;
 } CHUNK_Iterator;
 
 /* Creates a ChunkIterator for efficient traversal of chunks within a file, specified by the file descriptor. The iterator is configured with a defined range of blocks (usually starting from block 1), along with the size of each chunk and the maximum number of records in each block.*/
 CHUNK_Iterator CHUNK_CreateIterator(int fileDesc, int blocksInChunk);
 
-/* Retrieves the next CHUNK in the sequence as per the provided CHUNK_Iterator. */
+/* Retrieves the next CHUNK in the sequence as per the provided CHUNK_Iterator.(IMPORTANT)At the start this return the CHUNK[0] */
 int CHUNK_GetNext(CHUNK_Iterator *iterator,CHUNK* chunk);
 
 /* Retrieves the ith record from a CHUNK of blocks in a heap file. Returns 0 if successful, populating the 'record' parameter; otherwise, -1. Assumes sequential ordering of records within the chunk.*/
@@ -42,7 +40,7 @@ void CHUNK_Print(CHUNK chunk);//
 typedef struct CHUNK_RecordIterator {
     CHUNK chunk;
     int currentBlockId;
-    int cursor;
+    int cursor; //cursor in records in block
 } CHUNK_RecordIterator;
 
 /* Creates a record iterator for efficient traversal within a CHUNK. */

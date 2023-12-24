@@ -29,11 +29,14 @@ int main() {
   //here we will try some shits
   CHUNK_Iterator koumparakis = CHUNK_CreateIterator(file_desc,chunkSize);
   CHUNK chunk;
-  //CHUNK_GetNext(&koumparakis,&chunk);
-  for(int i = 0; i < koumparakis.chunkSize+2; i++)
+  
+  CHUNK_RecordIterator read;
+
+  for(int i = 0; i < 14; i++)
   {
     CHUNK_GetNext(&koumparakis,&chunk);
-    printf("CHUCK %d |from %d to %d with %d blocks and %d records|\n",i,chunk.from_BlockId,chunk.to_BlockId,chunk.blocksInChunk,chunk.recordsInChunk);
+    read = CHUNK_CreateRecordIterator(&chunk);
+    printf("%d\n",read.currentBlockId);
   }
   
   // sortPhase(file_desc,chunkSize);
