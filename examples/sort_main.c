@@ -49,7 +49,11 @@ int main() {
   CHUNK_Print(chunk);
   
 
-  // sortPhase(file_desc,chunkSize);
+  sortPhase(file_desc,chunkSize);
+  for(int i = 0; i < Arraysize(); i++)
+  {
+    CHUNK_Print(chunk);
+  }
   // mergePhases(file_desc,chunkSize,bWay,&fileIterator);
   return 0;
 }
