@@ -1,70 +1,67 @@
 #include <merge.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <math.h> //floor(double) function
 #include "chunk.h"
 #include "record.h"
 #include "bf.h"
 #include "hp_file.h"
-#define INT_MAX 2147483647
 
-bool MshouldSwap(Record* rec1, Record* rec2) {
-    return rec1->id > rec2->id; // Swap if id of rec1 is greater than id of rec2
+
+
+void Init_Record_Iterators(int size,CHUNK_Iterator iterator,int current_loop)
+{
+    CHUNK chunk;
+
+    //we must go in the number of chunk so we initilize right
+    
+
 }
 
+CHUNK_RecordIterator *Create_Record_Iterators(int bWay,int number_of_chunk_in_file,int loop_number,int loops_to_merge,int *size)
+{
+    CHUNK_RecordIterator *record_iterator;
+
+    //if we are in the last loop we must make less record iterator /else we use the defoult
+    int iterators_to_create = (loop_number == loops_to_merge-1) ? number_of_chunk_in_file - (bWay * loops_to_merge) : bWay;
+    *size = iterators_to_create;
+
+    record_iterator = malloc(sizeof(CHUNK_RecordIterator) * iterators_to_create);
+
+    return record_iterator;
+}
+
+
 void merge(int file_desc, int chunkSize, int bWay, int output_fd) {
-    // Initialize iterators and variables
-    CHUNK_Iterator* chunkIterators = malloc(bWay * sizeof(CHUNK_Iterator));
-    CHUNK* chunks = malloc(bWay * sizeof(CHUNK));
-    Record* records = malloc(bWay * sizeof(Record));
-    int* recordIndices = malloc(bWay * sizeof(int));
-    int minRecordIndex, minChunkIndex, totalRecordsMerged = 0;
+    
+    //we create a chunk iterator so we make the chunks with the data
+    CHUNK_Iterator iterator = CHUNK_CreateIterator(file_desc,chunkSize);
+    CHUNK inputChunk;
 
-    // Create iterators for chunks
-    for (int i = 0; i < bWay; i++) {
-        chunkIterators[i] = CHUNK_CreateIterator(file_desc, chunkSize);
-        CHUNK_GetNext(&chunkIterators[i], &chunks[i]);
-        recordIndices[i] = 0;
+    //find out how many loops we must do to merge using at most bWay chunks per time
+    double estimate_loops =  Arraysize() / (double)bWay;
+    int loops_to_merge = (int)(floor(estimate_loops) == estimate_loops) ? estimate_loops : estimate_loops + 1;
+    int size;
+
+    //we use a array of record itaratos (one for every chunk)
+    CHUNK_RecordIterator *record_iterator = NULL;
+    
+    //here we start the merge algorith based on the loops we calculate earlyer
+    for(int i = 0; i < loops_to_merge; i++)
+    {
+        free(record_iterator);
+        record_iterator = NULL;
+        record_iterator = Create_Record_Iterators(bWay,Arraysize(),i,loops_to_merge,&size);
+
+        //we initilize the records iterators with the right data
+        Init_Record_Iterators(size,iterator,i+1);
+
+
     }
 
-    // Merge chunks
-    while (totalRecordsMerged < bWay * chunkSize) {
-        // Load next records from each chunk
-        for (int i = 0; i < bWay; i++) {
-            if (recordIndices[i] < chunks[i].recordsInChunk) {
-                CHUNK_GetIthRecordInChunk(&chunks[i], recordIndices[i] + 1, &records[i]);
-            } else {
-                records[i].id = INT_MAX; // Mark as invalid record
-            }
-        }
+    if(record_iterator != NULL)
+        free(record_iterator);
 
-        // Find the minimum record among all chunks
-        minRecordIndex = -1;
-        for (int i = 0; i < bWay; i++) {
-            if (records[i].id != INT_MAX && (minRecordIndex == -1 || MshouldSwap(&records[i], &records[minRecordIndex]))) {
-                minRecordIndex = i;
-            }
-        }
-
-        // Write the minimum record to the output file
-        if (minRecordIndex != -1) {
-            HP_InsertEntry(output_fd, records[minRecordIndex]);
-            totalRecordsMerged++;
-            recordIndices[minRecordIndex]++;
-        } else {
-            break; // No valid record found to write
-        }
-    }
-
-    // Close all iterators
-    for (int i = 0; i < bWay; i++) {
-        // Here you may need to implement additional logic to unpin blocks and handle iterators properly
-        HP_Unpin(file_desc, chunks[i].from_BlockId); // Unpin the block associated with the chunk
-    }
-
-    free(chunkIterators);
-    free(chunks);
-    free(records);
-    free(recordIndices);
 }
 
 
