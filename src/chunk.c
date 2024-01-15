@@ -124,6 +124,7 @@ int CHUNK_UpdateIthRecord(CHUNK* chunk,  int i, Record record){
     //we set the record and Unpin the Block
     HP_UpdateRecord(chunk->file_desc,blockID_with_Record,Record_Potition,record);
     HP_Unpin(chunk->file_desc,blockID_with_Record);
+    return 0;//success
 }
 
 void CHUNK_Print(CHUNK chunk){

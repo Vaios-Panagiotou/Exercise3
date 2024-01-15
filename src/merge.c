@@ -93,8 +93,11 @@ void merge(int file_desc, int chunkSize, int bWay, int output_fd) {
         while (true) {
             //iterate through the array for records without an actual record (take the next one)
             for (int i = 0; i < size; i++) {
+                //if there is no value given in the record (NOT FOUND) and the chunk has records then we take next record
                 if (records[i].id == NOT_FOUND && Records_In_Chunks[i] == YES) {
+                    //this is TRUE if only we try to get the next record but it does not exist because we are in the last record of the corresponding chunk
                     if (CHUNK_GetNextRecord(&record_iterator[i], &records[i]) == 1) {
+                        //we change the variable so that we know that we have reached the end of the corresponding chunk
                         records[i].id == NOT_FOUND;
                         Records_In_Chunks[i] = OUT_OF_RECORDS;
                     }
